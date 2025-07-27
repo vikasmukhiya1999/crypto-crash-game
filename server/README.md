@@ -29,7 +29,7 @@ PORT=3000
 
 ## API Documentation
 
-**Base URL:** `http://localhost:3000/api`
+**Base URL:** `https://crypto-crash-game-4n3g.onrender.com/api`
 
 ### Player Management
 
