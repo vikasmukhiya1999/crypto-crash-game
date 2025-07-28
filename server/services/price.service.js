@@ -8,21 +8,35 @@ let lastFetch = 0; // Timestamp of last API call
 export const getCryptoPrice = async (ids = ["bitcoin", "ethereum"]) => {
   const now = Date.now();
 
-  // Return cached data if less than 30 seconds old
-  if (cachedPrices && now - lastFetch < 30_000) return cachedPrices;
+  // Return cached data if less than 10 seconds old
+  if (cachedPrices && now - lastFetch < 10_000) return cachedPrices;
 
-  // Build CoinGecko API URL with crypto IDs
-  const url = `${process.env.COINGECKO_API}?ids=${ids.join(
-    ","
-  )}&vs_currencies=usd`;
-
+  // Using CoinMarketCap API with free tier
   try {
-    const { data } = await axios.get(url, {
-      headers: { "User-Agent": "Mozilla/5.0 crash-game/1.0" }, // for api restriction on onrender to access api in production
-    });
+    const response = await axios.get(
+      "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest",
+      {
+        headers: {
+          "X-CMC_PRO_API_KEY": process.env.API_KEY,
+          Accept: "application/json",
+          "Accept-Encoding": "deflate, gzip",
+        },
+        params: {
+          symbol: "BTC,ETH",
+          convert: "USD",
+        },
+      }
+    );
 
-    // Fetch fresh prices from API
-    // const { data } = await axios.get(url);  // for local dev pupose
+    // Transform CoinMarketCap response
+    const data = {
+      bitcoin: {
+        usd: response.data.data.BTC.quote.USD.price,
+      },
+      ethereum: {
+        usd: response.data.data.ETH.quote.USD.price,
+      },
+    };
 
     // Update cache with new data
     cachedPrices = data;
@@ -30,7 +44,14 @@ export const getCryptoPrice = async (ids = ["bitcoin", "ethereum"]) => {
 
     return data;
   } catch (error) {
-    if (cachedPrices) return cachedPrices;
+    console.error("CoinMarketCap API Error:", error.message);
+
+    // Return cached data if available
+    if (cachedPrices) {
+      console.log("Using cached prices due to API error");
+      return cachedPrices;
+    }
+
     throw error;
   }
 };
