@@ -16,16 +16,21 @@ export const getCryptoPrice = async (ids = ["bitcoin", "ethereum"]) => {
     ","
   )}&vs_currencies=usd`;
 
-  const { data } = await axios.get(url, {
-    headers: { "User-Agent": "Mozilla/5.0 crash-game/1.0" }, // for api restriction on onrender to access api in production
-  });
+  try {
+    const { data } = await axios.get(url, {
+      headers: { "User-Agent": "Mozilla/5.0 crash-game/1.0" }, // for api restriction on onrender to access api in production
+    });
 
-  // Fetch fresh prices from API
-  // const { data } = await axios.get(url);  // for local dev pupose
+    // Fetch fresh prices from API
+    // const { data } = await axios.get(url);  // for local dev pupose
 
-  // Update cache with new data
-  cachedPrices = data;
-  lastFetch = now;
+    // Update cache with new data
+    cachedPrices = data;
+    lastFetch = now;
 
-  return data;
+    return data;
+  } catch (error) {
+    if (cachedPrices) return cachedPrices;
+    throw error;
+  }
 };
