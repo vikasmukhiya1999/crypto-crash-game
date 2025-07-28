@@ -8,16 +8,20 @@ let lastFetch = 0; // Timestamp of last API call
 export const getCryptoPrice = async (ids = ["bitcoin", "ethereum"]) => {
   const now = Date.now();
 
-  // Return cached data if less than 10 seconds old
-  if (cachedPrices && now - lastFetch < 10_000) return cachedPrices;
+  // Return cached data if less than 30 seconds old
+  if (cachedPrices && now - lastFetch < 30_000) return cachedPrices;
 
   // Build CoinGecko API URL with crypto IDs
   const url = `${process.env.COINGECKO_API}?ids=${ids.join(
     ","
   )}&vs_currencies=usd`;
 
+  const { data } = await axios.get(url, {
+    headers: { "User-Agent": "Mozilla/5.0 crash-game/1.0" }, // for api restriction on onrender to access api in production
+  });
+
   // Fetch fresh prices from API
-  const { data } = await axios.get(url);
+  // const { data } = await axios.get(url);  // for local dev pupose
 
   // Update cache with new data
   cachedPrices = data;
