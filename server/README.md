@@ -23,8 +23,10 @@ npm run dev
 
 ```env
 MONGO_URI=mongodb://localhost:27017/crash-game
-COINGECKO_API=https://api.coingecko.com/api/v3/simple/price
+API_KEY=your_coinmarketcap_api_key
 PORT=3000
+NODE_ENV=development
+FRONTEND_URL=your_frontend_url
 ```
 
 ## API Documentation
@@ -45,6 +47,7 @@ Content-Type: application/json
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "_id": "64a1b2c3d4e5f6789abcdef0",
@@ -59,6 +62,7 @@ Content-Type: application/json
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "msg": "Username already exists"
@@ -72,6 +76,7 @@ GET /player/wallet/player123
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "username": "player123",
@@ -91,6 +96,7 @@ GET /player/wallet/player123
 ```
 
 **Error Response (404):**
+
 ```json
 {
   "msg": "Player not found"
@@ -104,6 +110,7 @@ GET /player/transactions/player123
 ```
 
 **Success Response (200):**
+
 ```json
 [
   {
@@ -114,14 +121,14 @@ GET /player/transactions/player123
     "currency": "BTC",
     "transaction_type": "bet",
     "transaction_hash": "tx_1705312200000_456",
-    "price_at_time": 42650.50,
+    "price_at_time": 42650.5,
     "createdAt": "2024-01-15T10:30:00.000Z",
     "updatedAt": "2024-01-15T10:30:00.000Z"
   },
   {
     "_id": "64a1b2c3d4e5f6789abcdef2",
     "player": "64a1b2c3d4e5f6789abcdef0",
-    "usd_amount": 25.50,
+    "usd_amount": 25.5,
     "crypto_amount": 0.00987654,
     "currency": "ETH",
     "transaction_type": "cashout",
@@ -149,6 +156,7 @@ Content-Type: application/json
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "msg": "Bet placed successfully",
@@ -161,28 +169,32 @@ Content-Type: application/json
 
 **Error Responses:**
 
-*Player not found (404):*
+_Player not found (404):_
+
 ```json
 {
   "msg": "Player not found"
 }
 ```
 
-*Insufficient balance (400):*
+_Insufficient balance (400):_
+
 ```json
 {
   "msg": "Insufficient balance"
 }
 ```
 
-*Invalid currency (400):*
+_Invalid currency (400):_
+
 ```json
 {
   "msg": "Unsupported currency"
 }
 ```
 
-*Round not active (400):*
+_Round not active (400):_
+
 ```json
 {
   "msg": "Round not active or already bet placed"
@@ -196,6 +208,7 @@ GET /game/history
 ```
 
 **Success Response (200):**
+
 ```json
 [
   {
@@ -228,6 +241,7 @@ POST /game/start-round
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "msg": "✅ Manual round started"
@@ -235,6 +249,7 @@ POST /game/start-round
 ```
 
 **Error Response (500):**
+
 ```json
 {
   "msg": "Failed to start round",
@@ -249,6 +264,7 @@ POST /game/force-crash
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "msg": "🛑 Round crashed manually"
@@ -256,6 +272,7 @@ POST /game/force-crash
 ```
 
 **Error Response (500):**
+
 ```json
 {
   "msg": "Failed to crash round",
@@ -276,7 +293,7 @@ POST /game/force-crash
 - `round_crash` - Round ends with crash point
 - `player_cashout` - Player successfully cashed out
 
-## Provably Fair System
+## Fair Algo System
 
 The game uses cryptographic hashing to ensure fairness:
 
@@ -293,7 +310,7 @@ The game uses cryptographic hashing to ensure fairness:
 
 ## Price Integration
 
-- **Source:** CoinGecko API (BTC/ETH prices)
+- **Source:** CoinMarketCap API (BTC/ETH prices)
 - **Caching:** 10-second intervals to reduce API calls
 - **Conversion:** USD amounts converted to crypto for betting
 - **Audit Trail:** Price snapshots stored with each transaction
